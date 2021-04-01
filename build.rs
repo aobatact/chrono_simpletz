@@ -116,7 +116,7 @@ pub type {ty_name} = UtcZst<{h},{m}>;",
                 };
                 let _ = out_file.write_fmt(format_args!(
                     "
-/// {s_m} for DateTime::<Utc{type_name}>
+/// de/serialize {s_m}
 pub mod {mod_name}{{
     use crate::known_timezones::Utc{type_name};
     use chrono::*;
@@ -143,7 +143,7 @@ pub mod {mod_name}{{
                     }
                 ));
             }
-            let _ = out_file.write(b"}");
+            let _ = out_file.write(b"}\n");
         }
     }
 }
