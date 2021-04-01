@@ -10,7 +10,7 @@ use chrono::*;
 use chrono_simpletz::UtcZst;
 use chrono_simpletz::known_timezones::*;
 use std::mem::size_of_val;
-//constract by new() or Default::default()
+//construct by new() or Default::default()
 let p9 = UtcP9::new();
 //size of UtcP9 is zero
 assert_eq!(size_of_val(&p9), 0);
