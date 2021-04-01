@@ -4,6 +4,8 @@ version = "0.1.0"
 authors = ["aobatact <aobatact144@gmail.com>"]
 edition = "2018"
 build = "build.rs"
+description = "Simple Zero Sized Typed Utc timezones for chrono"
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
