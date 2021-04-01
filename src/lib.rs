@@ -23,7 +23,7 @@
 //! assert_eq!(time, fixed);
 //! //same Display with FixedOffset
 //! assert_eq!(time.to_string(), fixed.to_string());
-//! // smaller size than fixed size
+//! // smaller size than fixed offset size
 //! assert!(size_of_val(&time) < size_of_val(&fixed) )
 //! ```
 #![cfg_attr(not(std), no_std)]
@@ -45,6 +45,16 @@ impl<const HOUR: i32, const MINUTE: u32> UtcZst<HOUR, MINUTE> {
     /// Creates new `UtcZst`
     pub const fn new() -> Self {
         UtcZst
+    }
+    #[cfg(clock)]
+    /// Returns a Date which corresponds to the current date.
+    pub fn today() -> Date<Self> {
+        Utc::today().with_timezone(Self::new())
+    }
+    #[cfg(clock)]
+    /// Returns a DateTime which corresponds to the current date.
+    pub fn now() -> DateTime<Self> {
+        Utc::now().with_timezone(Self::new())
     }
 }
 impl<const HOUR: i32, const MINUTE: u32> Offset for UtcZst<HOUR, MINUTE> {

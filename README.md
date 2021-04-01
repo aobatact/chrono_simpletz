@@ -25,6 +25,6 @@ let fixed = time.with_timezone(&p9.fix());
 assert_eq!(time, fixed);
 //same Display with FixedOffset
 assert_eq!(time.to_string(), fixed.to_string());
-// smaller size than fixed size
+// smaller size than fixed offset size
 assert!(size_of_val(&time) < size_of_val(&fixed) )
 ```

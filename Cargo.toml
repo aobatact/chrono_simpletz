@@ -1,6 +1,6 @@
 [package]
 name = "chrono-simpletz"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["aobatact <aobatact144@gmail.com>"]
 edition = "2018"
 build = "build.rs"
@@ -12,8 +12,9 @@ repository = "https://github.com/aobatact/chrono_simpletz"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["std"]
+default = ["std","clock"]
 std = []
+clock = ["chrono/clock"]
 
 [dependencies]
 chrono = { version = "0.4", default-features = false }
