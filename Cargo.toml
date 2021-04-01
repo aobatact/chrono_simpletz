@@ -12,10 +12,17 @@ repository = "https://github.com/aobatact/chrono_simpletz"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["std","clock","serde"]
+default = ["std", "clock", "serde", "serde_ts_all"]
 std = []
 clock = ["chrono/clock"]
-serde = ["serde1","chrono/serde","serde_with"]
+serde = ["serde1","chrono/serde"]
+serde_ts_all = ["serde_ts_milliseconds","serde_ts_milliseconds_option","serde_ts_nanoseconds","serde_ts_nanoseconds_option","serde_ts_seconds","serde_ts_seconds_option"]
+serde_ts_seconds = ["serde"]
+serde_ts_seconds_option = ["serde"]
+serde_ts_milliseconds = ["serde"]
+serde_ts_milliseconds_option = ["serde"]
+serde_ts_nanoseconds = ["serde"]
+serde_ts_nanoseconds_option = ["serde"]
 
 [dependencies]
 chrono = { version = "0.4", default-features = false }
@@ -25,9 +32,3 @@ default-features = false
 optional = true
 version = "1.0.99"
 package = "serde"
-
-[dependencies.serde_with]
-default-features = false
-optional = true
-version = "1.8.0"
-

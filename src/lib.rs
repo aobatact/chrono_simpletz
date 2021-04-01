@@ -81,7 +81,7 @@ impl<const HOUR: i32, const MINUTE: u32> TimeZone for UtcZst<HOUR, MINUTE> {
         *self
     }
 }
-// I don't want to do like this (because it loses some information for debuging), but chrono/serde is using Debug of Offset for Serializing DateTime so ... 
+// I don't want to do like this (because it loses some information for debuging), but chrono/serde is using Debug of Offset for Serializing DateTime so ...
 impl<const HOUR: i32, const MINUTE: u32> core::fmt::Debug for UtcZst<HOUR, MINUTE> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{:+03}:{:02}", HOUR, MINUTE)
@@ -93,20 +93,8 @@ impl<const HOUR: i32, const MINUTE: u32> core::fmt::Display for UtcZst<HOUR, MIN
     }
 }
 
-/*
-#[cfg(serde)]
-mod serde_tz{
-    use crate::*;
-    use chrono::*;
-    use serde1::{Serializer};
-    use serde_with::{SerializeAs,DeserializeAs,TimestampMicroSeconds,formats::Strict};
-
-    impl<const HOUR: i32, const MINUTE: u32> SerializeAs<DateTime<UtcZst<HOUR, MINUTE>>> for TimestampMicroSeconds<i64,Strict>{
-        fn serialize_as<S>(source : &DateTime<UtcZst<HOUR, MINUTE>>, serializer : S) -> Result<S::Ok, S::Error> where S : Serializer{
-            serializer.serialize_i64(source.naive_utc())
-        }
-    }
-}*/
+#[cfg(feature = "serde")]
+pub mod serde;
 
 #[cfg(test)]
 #[cfg(std)]

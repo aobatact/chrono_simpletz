@@ -44,29 +44,106 @@ fn main() {
         (-11, 0),
         (-12, 0),
     ];
-    let out_path = Path::new(&env::var("OUT_DIR").unwrap()).join("known_timezones.rs");
-    let mut out_file = File::create(out_path).unwrap();
-    for (h, m) in utcvec {
-        let ty_name = if h < 0 {
-            if m == 0 {
-                format!("UtcM{}", -h)
+
+    {
+        let out_path = Path::new(&env::var("OUT_DIR").unwrap()).join("known_timezones.rs");
+        let mut out_file = File::create(out_path).unwrap();
+        for (h, m) in &utcvec {
+            let ty_name = if *h < 0 {
+                if *m == 0 {
+                    format!("UtcM{}", -h)
+                } else {
+                    format!("UtcM{}_{}", -h, m)
+                }
             } else {
-                format!("UtcM{}_{}", -h, m)
-            }
-        } else {
-            if m == 0 {
-                format!("UtcP{}", h)
-            } else {
-                format!("UtcP{}_{}", h, m)
-            }
-        };
-        let _ = out_file.write_fmt(format_args!(
-            "
-            /// Alias for Utc{h:+03}:{m:02}
+                if *m == 0 {
+                    format!("UtcP{}", h)
+                } else {
+                    format!("UtcP{}_{}", h, m)
+                }
+            };
+            let _ = out_file.write_fmt(format_args!(
+                "
+/// Alias for Utc{h:+03}:{m:02}
 pub type {ty_name} = UtcZst<{h},{m}>;",
-            ty_name = ty_name,
-            h = h,
-            m = m
-        ));
+                ty_name = ty_name,
+                h = h,
+                m = m
+            ));
+        }
+    }
+    let serde_mods = [
+        "ts_seconds",
+        "ts_seconds_option",
+        "ts_milliseconds",
+        "ts_milliseconds_option",
+        "ts_nanoseconds",
+        "ts_nanoseconds_option",
+    ];
+    for s_m in &serde_mods {
+        if env::var(format!("CARGO_FEATURE_SERDE_{}", s_m.to_uppercase())).is_ok() {
+            let out_path =
+                Path::new(&env::var("OUT_DIR").unwrap()).join(format!("serde_{}.rs", s_m));
+            let mut out_file = File::create(out_path).unwrap();
+
+            let _ = out_file.write_fmt(format_args!("pub mod {} {{", s_m));
+            for (h, m) in &utcvec {
+                let type_name = if *h < 0 {
+                    if *m == 0 {
+                        format!("M{}", -h)
+                    } else {
+                        format!("M{}_{}", -h, m)
+                    }
+                } else {
+                    if *m == 0 {
+                        format!("P{}", h)
+                    } else {
+                        format!("P{}_{}", h, m)
+                    }
+                };
+                let (ty, dt_conv, is_op) = if s_m.ends_with("option") {
+                    (
+                        format!("Option<DateTime<Utc{type_name}>>", type_name = type_name),
+                        "&dt.map(|x|x.with_timezone(&chrono::Utc))",
+                        true,
+                    )
+                } else {
+                    (
+                        format!("DateTime<Utc{type_name}>", type_name = type_name),
+                        "&dt.with_timezone(&chrono::Utc)",
+                        false,
+                    )
+                };
+                let _ = out_file.write_fmt(format_args!(
+                    "
+/// {s_m} for DateTime::<Utc{type_name}>
+pub mod {mod_name}{{
+    use crate::known_timezones::Utc{type_name};
+    use chrono::*;
+    /// Funciton for serialize. Use this for serialize_with. 
+    pub fn serialize<S>(dt: &{ty}, serializer : S) -> Result<S::Ok, S::Error> 
+        where S : serde1::Serializer {{ chrono::serde::{s_m}::serialize({dt_conv}, serializer) }}
+    /// Funciton for deserialize. Use this for deserialize_with. 
+    pub fn deserialize<'de, D>(d: D) -> Result<{ty}, D::Error>
+    where
+        D: serde1::Deserializer<'de>,
+    {{
+        chrono::serde::{s_m}::deserialize(d).map(|x| {demap})
+    }}
+}}",
+                    mod_name = type_name.to_lowercase(),
+                    type_name = type_name,
+                    s_m = s_m,
+                    ty = ty,
+                    dt_conv = dt_conv,
+                    demap = if is_op {
+                        format!("x.map(|y|y.with_timezone( &Utc{}::new()))", type_name)
+                    } else {
+                        format!("x.with_timezone( &Utc{}::new())", type_name)
+                    }
+                ));
+            }
+            let _ = out_file.write(b"}");
+        }
     }
 }
