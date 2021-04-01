@@ -42,7 +42,7 @@ impl<const HOUR: i32, const MINUTE: u32> UtcZst<HOUR, MINUTE> {
     /// Checks whether the `HOUR` and `MINUTE` is in valid range`(-23 <= HOUR <= 23 & MINUTE < 60)`. This does not check whether the timezone is known.
     pub const IS_IN_VALID_RANGE: bool = (HOUR >= -23) & (HOUR <= 23) & (MINUTE < 60);
     /// Creates new `UtcZst`
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         UtcZst
     }
 }
