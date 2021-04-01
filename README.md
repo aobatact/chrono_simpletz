@@ -18,7 +18,7 @@ assert_eq!(time.naive_utc(), naive_time);
 assert_eq!(size_of_val(&time),size_of_val(&naive_time));
 let fixed = time.with_timezone(&p9.fix());
 assert_eq!(time, fixed);
-//same as display with FixedOffset
+//same Display with FixedOffset
 assert_eq!(time.to_string(), fixed.to_string());
 // smaller size than fixed size
 assert!(size_of_val(&time) < size_of_val(&fixed) )
