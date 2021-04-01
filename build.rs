@@ -61,7 +61,9 @@ fn main() {
             }
         };
         let _ = out_file.write_fmt(format_args!(
-            "pub type {ty_name} = UtcZst<{h},{m}>;",
+            "
+            /// Alias for Utc{h:+03}:{m:02}
+pub type {ty_name} = UtcZst<{h},{m}>;",
             ty_name = ty_name,
             h = h,
             m = m

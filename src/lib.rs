@@ -26,6 +26,7 @@
 //! // smaller size than fixed size
 //! assert!(size_of_val(&time) < size_of_val(&fixed) )
 //! ```
+#![cfg_attr(not(std), no_std)]
 
 use chrono::*;
 const HOUR_TO_SEC: i32 = 3600;
@@ -76,6 +77,7 @@ impl<const HOUR: i32, const MINUTE: u32> core::fmt::Display for UtcZst<HOUR, MIN
 }
 
 #[cfg(test)]
+#[cfg(std)]
 mod tests {
     use crate::known_timezones::*;
     use crate::*;
