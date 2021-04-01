@@ -12,10 +12,22 @@ repository = "https://github.com/aobatact/chrono_simpletz"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["std","clock"]
+default = ["std","clock","serde"]
 std = []
 clock = ["chrono/clock"]
+serde = ["serde1","chrono/serde","serde_with"]
 
 [dependencies]
 chrono = { version = "0.4", default-features = false }
+
+[dependencies.serde1]
+default-features = false
+optional = true
+version = "1.0.99"
+package = "serde"
+
+[dependencies.serde_with]
+default-features = false
+optional = true
+version = "1.8.0"
 

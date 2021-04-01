@@ -29,12 +29,13 @@
 #![cfg_attr(not(std), no_std)]
 
 use chrono::*;
+
 const HOUR_TO_SEC: i32 = 3600;
 const MIN_TO_SEC: i32 = 60;
 pub mod known_timezones;
 
 /// Represent Fixed Timezone with zero sized type and const generics.
-#[derive(Clone, Copy, Eq, PartialEq, Hash, Debug, Default, Ord, PartialOrd)]
+#[derive(Clone, Copy, Eq, PartialEq, Hash, Default, Ord, PartialOrd)]
 pub struct UtcZst<const HOUR: i32, const MINUTE: u32>;
 impl<const HOUR: i32, const MINUTE: u32> UtcZst<HOUR, MINUTE> {
     /// Gets the offset seconds. This is used to get [`FixedOffset`].
@@ -80,11 +81,32 @@ impl<const HOUR: i32, const MINUTE: u32> TimeZone for UtcZst<HOUR, MINUTE> {
         *self
     }
 }
+// I don't want to do like this (because it loses some information for debuging), but chrono/serde is using Debug of Offset for Serializing DateTime so ... 
+impl<const HOUR: i32, const MINUTE: u32> core::fmt::Debug for UtcZst<HOUR, MINUTE> {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        write!(f, "{:+03}:{:02}", HOUR, MINUTE)
+    }
+}
 impl<const HOUR: i32, const MINUTE: u32> core::fmt::Display for UtcZst<HOUR, MINUTE> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{:+03}:{:02}", HOUR, MINUTE)
     }
 }
+
+/*
+#[cfg(serde)]
+mod serde_tz{
+    use crate::*;
+    use chrono::*;
+    use serde1::{Serializer};
+    use serde_with::{SerializeAs,DeserializeAs,TimestampMicroSeconds,formats::Strict};
+
+    impl<const HOUR: i32, const MINUTE: u32> SerializeAs<DateTime<UtcZst<HOUR, MINUTE>>> for TimestampMicroSeconds<i64,Strict>{
+        fn serialize_as<S>(source : &DateTime<UtcZst<HOUR, MINUTE>>, serializer : S) -> Result<S::Ok, S::Error> where S : Serializer{
+            serializer.serialize_i64(source.naive_utc())
+        }
+    }
+}*/
 
 #[cfg(test)]
 #[cfg(std)]
