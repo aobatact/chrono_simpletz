@@ -87,7 +87,8 @@ pub type {ty_name} = UtcZst<{h},{m}>;",
             let mut out_file = File::create(out_path).unwrap();
 
             let _ = out_file.write_fmt(format_args!(
-                "/// Ser/de to/from timestamps with {s_m}
+                "/// Ser/de to/from timestamps with {s_m}.\\
+                /// Only available for serde_{s_m} feature flag.
             pub mod {s_m} {{",
                 s_m = s_m
             ));
@@ -120,7 +121,7 @@ pub type {ty_name} = UtcZst<{h},{m}>;",
                 };
                 let _ = out_file.write_fmt(format_args!(
                     "
-/// de/serialize {s_m} for Utc{h:+03}:{m:02}. Only available for serde_{s_m} feature flag
+/// De/serialize {s_m} for Utc{h:+03}:{m:02}. 
 pub mod {mod_name}{{
     use crate::known_timezones::Utc{type_name};
     use chrono::*;
@@ -157,7 +158,10 @@ pub mod {mod_name}{{
         let mut out_file = File::create(out_path).unwrap();
 
         let _ = out_file
-            .write(b"/// de/serialize as De/Serialize for DateTime<Utc>\npub mod rfc3339 {");
+            .write(b"/// De/serialize as De/Serialize for DateTime<Utc>.\\
+            /// We need this because DateTime<UtcZtc<H,M>> cannot impl De/Serialize.\\
+            /// Only available for serde_rfc3339 feature flag.
+            pub mod rfc3339 {");
         for (h, m) in &utcvec {
             let type_name = if *h < 0 {
                 if *m == 0 {
@@ -174,9 +178,7 @@ pub mod {mod_name}{{
             };
             let _ = out_file.write_fmt(format_args!(
                 "
-/// de/serialize as De/Serialize for DateTime<UtcZtc<H,M>>.
-/// We need this because DateTime<UtcZtc<H,M>> cannot impl De/Serialize. 
-/// Only available for serde_rfc3339 feature flag
+/// De/serialize as De/Serialize for DateTime<UtcZtc<H,M>>.
 pub mod {mod_name}{{
     use crate::known_timezones::{ty};
     use chrono::*;
