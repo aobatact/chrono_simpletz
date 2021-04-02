@@ -12,32 +12,33 @@ repository = "https://github.com/aobatact/chrono_simpletz"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["std", "clock", "serde_ts_seconds"]
+default = ["std", "clock"]
 std = []
 clock = ["chrono/clock"]
-serde = ["serde1","chrono/serde"]
-serde_ts_all = ["serde_ts_milliseconds","serde_ts_milliseconds_option","serde_ts_nanoseconds","serde_ts_nanoseconds_option","serde_ts_seconds","serde_ts_seconds_option"]
-serde_ts_seconds = ["serde"]
-serde_ts_seconds_option = ["serde"]
-serde_ts_milliseconds = ["serde"]
-serde_ts_milliseconds_option = ["serde"]
-serde_ts_nanoseconds = ["serde"]
-serde_ts_nanoseconds_option = ["serde"]
+serde1 = ["serde","chrono/serde"]
+serde_ts_all = ["serde_ts_milliseconds","serde_ts_milliseconds_option","serde_ts_nanoseconds","serde_ts_nanoseconds_option","serde_ts_seconds","serde_ts_seconds_option", "serde_rfc3339"]
+serde_ts_seconds = ["serde1"]
+serde_ts_seconds_option = ["serde1"]
+serde_ts_milliseconds = ["serde1"]
+serde_ts_milliseconds_option = ["serde1"]
+serde_ts_nanoseconds = ["serde1"]
+serde_ts_nanoseconds_option = ["serde1"]
+serde_rfc3339 = ["serde1"]
 
 [dependencies]
 chrono = { version = "0.4", default-features = false }
 
-[dependencies.serde1]
+[dependencies.serde]
 default-features = false
 optional = true
 version = "1.0"
 package = "serde"
-
-[dev-dependencies.serde1]
-default-features = false
-version = "1.0"
-package = "serde"
 features = ["derive"]
+
+#[dev-dependencies.serde]
+#default-features = false
+#version = "1.0"
+#package = "serde"
 
 [dev-dependencies]
 serde_json = "1.0"

@@ -86,7 +86,11 @@ pub type {ty_name} = UtcZst<{h},{m}>;",
                 Path::new(&env::var("OUT_DIR").unwrap()).join(format!("serde_{}.rs", s_m));
             let mut out_file = File::create(out_path).unwrap();
 
-            let _ = out_file.write_fmt(format_args!("pub mod {} {{", s_m));
+            let _ = out_file.write_fmt(format_args!(
+                "/// Ser/de to/from timestamps with {s_m}
+            pub mod {s_m} {{",
+                s_m = s_m
+            ));
             for (h, m) in &utcvec {
                 let type_name = if *h < 0 {
                     if *m == 0 {
@@ -122,11 +126,11 @@ pub mod {mod_name}{{
     use chrono::*;
     /// Funciton for serialize. Use this for serialize_with. 
     pub fn serialize<S>(dt: &{ty}, serializer : S) -> Result<S::Ok, S::Error> 
-        where S : serde1::Serializer {{ chrono::serde::{s_m}::serialize({dt_conv}, serializer) }}
+        where S : ::serde::Serializer {{ chrono::serde::{s_m}::serialize({dt_conv}, serializer) }}
     /// Funciton for deserialize. Use this for deserialize_with. 
     pub fn deserialize<'de, D>(d: D) -> Result<{ty}, D::Error>
     where
-        D: serde1::Deserializer<'de>,
+        D: ::serde::Deserializer<'de>,
     {{
         chrono::serde::{s_m}::deserialize(d).map(|x| {demap})
     }}
@@ -145,5 +149,51 @@ pub mod {mod_name}{{
             }
             let _ = out_file.write(b"}\n");
         }
+    }
+    if env::var("CARGO_FEATURE_SERDE_RFC3339").is_ok() {
+        let out_path = Path::new(&env::var("OUT_DIR").unwrap()).join("serde_rfc3339.rs");
+        let mut out_file = File::create(out_path).unwrap();
+
+        let _ = out_file
+            .write(b"/// de/serialize as De/Serialize for DateTime<Utc>\npub mod rfc3339 {");
+        for (h, m) in &utcvec {
+            let type_name = if *h < 0 {
+                if *m == 0 {
+                    format!("UtcM{}", -h)
+                } else {
+                    format!("UtcM{}_{}", -h, m)
+                }
+            } else {
+                if *m == 0 {
+                    format!("UtcP{}", h)
+                } else {
+                    format!("UtcP{}_{}", h, m)
+                }
+            };
+            let _ = out_file.write_fmt(format_args!(
+                "
+/// de/serialize as De/Serialize for DateTime<Utc>
+pub mod {mod_name}{{
+    use crate::known_timezones::{ty};
+    use chrono::*;
+    use ::serde::*;
+    /// Funciton for serialize. Use this for serialize_with. 
+    pub fn serialize<S>(dt: &DateTime<{ty}>, serializer : S) -> Result<S::Ok, S::Error> 
+        where S : ::serde::Serializer {{ dt.with_timezone(&Utc).serialize(serializer) }}
+    /// Funciton for deserialize. Use this for deserialize_with. 
+    pub fn deserialize<'de, D>(d: D) -> Result<DateTime<{ty}>, D::Error>
+    where
+        D: ::serde::Deserializer<'de>,
+    {{
+        DateTime::<Utc>::deserialize(d).map(|x|x.with_timezone(&{ty}::new()))
+    }}
+}}
+",
+                mod_name = type_name[3..].to_lowercase(),
+                ty = type_name,
+            ));
+        }
+
+        let _ = out_file.write(b"}\n");
     }
 }
