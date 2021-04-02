@@ -30,7 +30,10 @@ assert!(size_of_val(&time) < size_of_val(&fixed) )
 ```
 
 # features
-## clock
+## std (default)
+with std
+
+## clock (default)
 Adds today and now function for UtcZst. 
 
 ## serde

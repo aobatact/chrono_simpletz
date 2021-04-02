@@ -28,7 +28,10 @@
 //! ```
 //!
 //! # features
-//! ## clock
+//! ## std (default)
+//! with std
+//!
+//! ## clock (default)
 //! Adds today and now function for UtcZst.
 //!
 //! ## serde
@@ -106,7 +109,7 @@ impl<const HOUR: i32, const MINUTE: u32> core::fmt::Display for UtcZst<HOUR, MIN
     }
 }
 
-#[cfg(feature = "serde")]
+#[cfg(feature = "serde1")]
 pub mod serde;
 
 #[cfg(test)]

@@ -14,7 +14,6 @@ include!(concat!(env!("OUT_DIR"), "/serde_ts_nanoseconds_option.rs"));
 #[cfg(feature = "serde_rfc3339")]
 include!(concat!(env!("OUT_DIR"), "/serde_rfc3339.rs"));
 
-
 #[cfg(test)]
 #[cfg(feature = "serde_ts_seconds")]
 mod test_ts_seconds {

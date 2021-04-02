@@ -157,11 +157,12 @@ pub mod {mod_name}{{
         let out_path = Path::new(&env::var("OUT_DIR").unwrap()).join("serde_rfc3339.rs");
         let mut out_file = File::create(out_path).unwrap();
 
-        let _ = out_file
-            .write(b"/// De/serialize as De/Serialize for DateTime<Utc>.\\
+        let _ = out_file.write(
+            b"/// De/serialize as De/Serialize for DateTime<Utc>.\\
             /// We need this because DateTime<UtcZtc<H,M>> cannot impl De/Serialize.\\
             /// Only available for serde_rfc3339 feature flag.
-            pub mod rfc3339 {");
+            pub mod rfc3339 {",
+        );
         for (h, m) in &utcvec {
             let type_name = if *h < 0 {
                 if *m == 0 {
