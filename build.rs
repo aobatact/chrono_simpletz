@@ -159,7 +159,7 @@ pub mod {mod_name}{{
 
         let _ = out_file.write(
             b"/// De/serialize as De/Serialize for DateTime<Utc>.\\
-            /// We need this because DateTime<UtcZtc<H,M>> cannot impl De/Serialize.\\
+            /// We need this because DateTime<UtcZtc<H,M>> cannot impl Deserialize.\\
             /// Only available for serde_rfc3339 feature flag.
             pub mod rfc3339 {",
         );
