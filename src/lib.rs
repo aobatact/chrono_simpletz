@@ -23,18 +23,35 @@
 //! assert_eq!(time, fixed);
 //! //same Display with FixedOffset
 //! assert_eq!(time.to_string(), fixed.to_string());
-//! // smaller size than fixed offset size
+//! // smaller size than FixedOffset size
 //! assert!(size_of_val(&time) < size_of_val(&fixed) )
 //! ```
+//!
+//! # features
+//! ## std (default)
+//! with std
+//!
+//! ## clock (default)
+//! Adds today and now function for UtcZst.
+//!
+//! ## serde
+//! ### serde_ts_(seconds|milliseconds|nanoseconds)(|_option)
+//! Adds modules for de/serialize functions to use with de/serialize_with function.
+//!
+//! ### serde_ts_rfc3339(|_option)
+//! Adds modules for de/serialize functions to use with de/serialize_with function.
+//! You need this when you want to de/serialize like `DateTime<Utc>`, because `DateTime<UtcZtc<H,M>>` cannot impl De/Serialize.
+//!
 #![cfg_attr(not(std), no_std)]
 
 use chrono::*;
+
 const HOUR_TO_SEC: i32 = 3600;
 const MIN_TO_SEC: i32 = 60;
 pub mod known_timezones;
 
 /// Represent Fixed Timezone with zero sized type and const generics.
-#[derive(Clone, Copy, Eq, PartialEq, Hash, Debug, Default, Ord, PartialOrd)]
+#[derive(Clone, Copy, Eq, PartialEq, Hash, Default, Ord, PartialOrd)]
 pub struct UtcZst<const HOUR: i32, const MINUTE: u32>;
 impl<const HOUR: i32, const MINUTE: u32> UtcZst<HOUR, MINUTE> {
     /// Gets the offset seconds. This is used to get [`FixedOffset`].
@@ -47,12 +64,12 @@ impl<const HOUR: i32, const MINUTE: u32> UtcZst<HOUR, MINUTE> {
         UtcZst
     }
     #[cfg(clock)]
-    /// Returns a Date which corresponds to the current date.
+    /// Returns a Date which corresponds to the current date. Only available with clock feature.
     pub fn today() -> Date<Self> {
         Utc::today().with_timezone(Self::new())
     }
     #[cfg(clock)]
-    /// Returns a DateTime which corresponds to the current date.
+    /// Returns a DateTime which corresponds to the current date. Only available with clock feature.
     pub fn now() -> DateTime<Self> {
         Utc::now().with_timezone(Self::new())
     }
@@ -80,11 +97,20 @@ impl<const HOUR: i32, const MINUTE: u32> TimeZone for UtcZst<HOUR, MINUTE> {
         *self
     }
 }
+// I don't want to do like this (because it loses some information for debuging), but chrono/serde is using Debug of Offset for Serializing DateTime so ...
+impl<const HOUR: i32, const MINUTE: u32> core::fmt::Debug for UtcZst<HOUR, MINUTE> {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        write!(f, "{:+03}:{:02}", HOUR, MINUTE)
+    }
+}
 impl<const HOUR: i32, const MINUTE: u32> core::fmt::Display for UtcZst<HOUR, MINUTE> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{:+03}:{:02}", HOUR, MINUTE)
     }
 }
+
+#[cfg(feature = "serde1")]
+pub mod serde;
 
 #[cfg(test)]
 #[cfg(std)]
