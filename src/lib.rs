@@ -26,6 +26,19 @@
 //! // smaller size than FixedOffset size
 //! assert!(size_of_val(&time) < size_of_val(&fixed) )
 //! ```
+//!
+//! # features
+//! ## clock
+//! Adds today and now function for UtcZst.
+//!
+//! ## serde
+//! ### serde_ts_(seconds|milliseconds|nanoseconds)(|_option)
+//! Adds modules for de/serialize functions to use with de/serialize_with function.
+//!
+//! ### serde_ts_rfc3339(|_option)
+//! Adds modules for de/serialize functions to use with de/serialize_with function.
+//! You need this when you want to de/serialize like `DateTime<Utc>`, because `DateTime<UtcZtc<H,M>>` cannot impl De/Serialize.
+//!
 #![cfg_attr(not(std), no_std)]
 
 use chrono::*;
@@ -48,12 +61,12 @@ impl<const HOUR: i32, const MINUTE: u32> UtcZst<HOUR, MINUTE> {
         UtcZst
     }
     #[cfg(clock)]
-    /// Returns a Date which corresponds to the current date.
+    /// Returns a Date which corresponds to the current date. Only available with clock feature.
     pub fn today() -> Date<Self> {
         Utc::today().with_timezone(Self::new())
     }
     #[cfg(clock)]
-    /// Returns a DateTime which corresponds to the current date.
+    /// Returns a DateTime which corresponds to the current date. Only available with clock feature.
     pub fn now() -> DateTime<Self> {
         Utc::now().with_timezone(Self::new())
     }

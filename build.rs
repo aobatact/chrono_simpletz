@@ -120,7 +120,7 @@ pub type {ty_name} = UtcZst<{h},{m}>;",
                 };
                 let _ = out_file.write_fmt(format_args!(
                     "
-/// de/serialize {s_m}
+/// de/serialize {s_m} for Utc{h:+03}:{m:02}. Only available for serde_{s_m} feature flag
 pub mod {mod_name}{{
     use crate::known_timezones::Utc{type_name};
     use chrono::*;
@@ -144,7 +144,9 @@ pub mod {mod_name}{{
                         format!("x.map(|y|y.with_timezone( &Utc{}::new()))", type_name)
                     } else {
                         format!("x.with_timezone( &Utc{}::new())", type_name)
-                    }
+                    },
+                    h = h,
+                    m = m
                 ));
             }
             let _ = out_file.write(b"}\n");
@@ -172,8 +174,9 @@ pub mod {mod_name}{{
             };
             let _ = out_file.write_fmt(format_args!(
                 "
-/// de/serialize as De/Serialize for DateTime<Utc>
+/// de/serialize as De/Serialize for DateTime<UtcZtc<H,M>>.
 /// We need this because DateTime<UtcZtc<H,M>> cannot impl De/Serialize. 
+/// Only available for serde_rfc3339 feature flag
 pub mod {mod_name}{{
     use crate::known_timezones::{ty};
     use chrono::*;

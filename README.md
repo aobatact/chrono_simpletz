@@ -37,3 +37,6 @@ Adds today and now function for UtcZst.
 ### serde_ts_(seconds|milliseconds|nanoseconds)(|_option)
 Adds modules for de/serialize functions to use with de/serialize_with function.
 
+### serde_ts_rfc3339(|_option)
+Adds modules for de/serialize functions to use with de/serialize_with function.
+You need this when you want to de/serialize like `DateTime<Utc>`, because `DateTime<UtcZtc<H,M>>` cannot impl De/Serialize.

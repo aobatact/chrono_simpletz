@@ -4,7 +4,7 @@ version = "0.1.3"
 authors = ["aobatact <aobatact144@gmail.com>"]
 edition = "2018"
 build = "build.rs"
-description = "Simple Zero Sized Typed Utc timezones for chrono"
+description = "Simple Zero Sized Typed timezones for chrono"
 license = "MIT"
 keywords = ["time", "timezone"]
 repository = "https://github.com/aobatact/chrono_simpletz"
@@ -34,11 +34,6 @@ optional = true
 version = "1.0"
 package = "serde"
 features = ["derive"]
-
-#[dev-dependencies.serde]
-#default-features = false
-#version = "1.0"
-#package = "serde"
 
 [dev-dependencies]
 serde_json = "1.0"
