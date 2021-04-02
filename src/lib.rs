@@ -23,7 +23,7 @@
 //! assert_eq!(time, fixed);
 //! //same Display with FixedOffset
 //! assert_eq!(time.to_string(), fixed.to_string());
-//! // smaller size than fixed offset size
+//! // smaller size than FixedOffset size
 //! assert!(size_of_val(&time) < size_of_val(&fixed) )
 //! ```
 #![cfg_attr(not(std), no_std)]
