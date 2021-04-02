@@ -173,6 +173,7 @@ pub mod {mod_name}{{
             let _ = out_file.write_fmt(format_args!(
                 "
 /// de/serialize as De/Serialize for DateTime<Utc>
+/// We need this because DateTime<UtcZtc<H,M>> cannot impl De/Serialize. 
 pub mod {mod_name}{{
     use crate::known_timezones::{ty};
     use chrono::*;

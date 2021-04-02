@@ -157,3 +157,27 @@ mod test_ts_seconds {
         assert_eq!(x, x2.unwrap());
     }
 }
+
+#[cfg(test)]
+#[cfg(feature = "serde_rfc3339")]
+mod test_rfc3339 {
+    use crate::known_timezones::UtcP9;
+    use ::serde::*;
+    use chrono::*;
+
+    #[derive(PartialEq, Eq, Clone, Debug, Serialize, Deserialize)]
+    pub struct X {
+        #[serde(with = "crate::serde::rfc3339::p9")]
+        pub p9: DateTime<UtcP9>,
+    }
+
+    #[test]
+    fn test() {
+        let dt = UtcP9::new().ymd(2000, 1, 1).and_hms(12, 0, 0);
+        let x = X { p9: dt };
+        let st = serde_json::to_string(&x);
+        assert!(st.is_ok());
+        let x2 = serde_json::from_str(&st.unwrap());
+        assert_eq!(x, x2.unwrap());
+    }
+}
