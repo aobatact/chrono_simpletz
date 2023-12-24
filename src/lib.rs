@@ -13,8 +13,8 @@
 //! assert_eq!(&p9.to_string(), "+09:00");
 //! assert_eq!(UtcP9::IS_IN_VALID_RANGE, true);
 //!
-//! let time = p9.ymd(2000, 1, 1).and_hms(12, 00, 00);
-//! let naive_time = NaiveDate::from_ymd(2000, 1, 1).and_hms(3, 0, 0);
+//! let time = p9.with_ymd_and_hms(2000, 1, 1,12, 00, 00).unwrap();
+//! let naive_time = NaiveDate::from_ymd_opt(2000, 1, 1).unwrap().and_hms(3, 0, 0);
 //! assert_eq!(time.naive_utc(), naive_time);
 //! //same size as naive datetime
 //! assert_eq!(size_of_val(&time),size_of_val(&naive_time));
@@ -42,13 +42,15 @@
 //! Adds modules for de/serialize functions to use with de/serialize_with function.
 //! You need this when you want to de/serialize like `DateTime<Utc>`, because `DateTime<UtcZtc<H,M>>` cannot impl De/Serialize.
 //!
-#![cfg_attr(not(std), no_std)]
+#![cfg_attr(not(feature="std"), no_std)]
 
 use chrono::*;
 
 const HOUR_TO_SEC: i32 = 3600;
 const MIN_TO_SEC: i32 = 60;
 pub mod known_timezones;
+#[cfg(feature = "serde")]
+pub mod serde;
 
 /// Represent Fixed Timezone with zero sized type and const generics.
 #[derive(Clone, Copy, Eq, PartialEq, Hash, Default, Ord, PartialOrd)]
@@ -59,6 +61,10 @@ impl<const HOUR: i32, const MINUTE: u32> UtcZst<HOUR, MINUTE> {
         HOUR * HOUR_TO_SEC + if HOUR < 0 { -1 } else { 1 } * (MINUTE as i32) * MIN_TO_SEC;
     /// Checks whether the `HOUR` and `MINUTE` is in valid range`(-23 <= HOUR <= 23 & MINUTE < 60)`. This does not check whether the timezone is known.
     pub const IS_IN_VALID_RANGE: bool = (HOUR >= -23) & (HOUR <= 23) & (MINUTE < 60);
+    pub const FIXED_OFFSET: FixedOffset = match FixedOffset::east_opt(Self::OFFSET_SECS) {
+        Some(fix) => fix,
+        None => unreachable!(),
+    };
     /// Creates new `UtcZst`
     pub const fn new() -> Self {
         UtcZst
@@ -76,7 +82,7 @@ impl<const HOUR: i32, const MINUTE: u32> UtcZst<HOUR, MINUTE> {
 }
 impl<const HOUR: i32, const MINUTE: u32> Offset for UtcZst<HOUR, MINUTE> {
     fn fix(&self) -> FixedOffset {
-        FixedOffset::east(Self::OFFSET_SECS)
+        Self::FIXED_OFFSET
     }
 }
 impl<const HOUR: i32, const MINUTE: u32> TimeZone for UtcZst<HOUR, MINUTE> {
@@ -109,43 +115,40 @@ impl<const HOUR: i32, const MINUTE: u32> core::fmt::Display for UtcZst<HOUR, MIN
     }
 }
 
-#[cfg(feature = "serde1")]
-pub mod serde;
-
 #[cfg(test)]
-#[cfg(std)]
+#[cfg(feature="std")]
 mod tests {
     use crate::known_timezones::*;
     use crate::*;
     #[test]
-    fn it_works() {
+    fn display() {
         let p9 = UtcP9::default();
         assert_eq!(&p9.to_string(), "+09:00");
         assert_eq!(std::mem::size_of_val(&p9), 0);
         assert_eq!(UtcP9::IS_IN_VALID_RANGE, true);
-        let n = p9.ymd(2000, 1, 1).and_hms(12, 00, 00);
+        let n = p9.with_ymd_and_hms(2000, 1, 1,12, 00, 00).unwrap();
         assert_eq!(
             n.naive_utc(),
-            NaiveDate::from_ymd(2000, 1, 1).and_hms(3, 0, 0)
+            NaiveDate::from_ymd_opt(2000, 1, 1).unwrap().and_hms_opt(3, 0, 0).unwrap()
         );
         let m9 = UtcM9::default();
         assert_eq!(&m9.to_string(), "-09:00");
-        let n = m9.ymd(2000, 1, 1).and_hms(12, 00, 00);
+        let n = m9.with_ymd_and_hms(2000, 1, 1,12, 00, 00).unwrap();
         assert_eq!(
             n.naive_utc(),
-            NaiveDate::from_ymd(2000, 1, 1).and_hms(21, 0, 0)
+            NaiveDate::from_ymd_opt(2000, 1, 1).unwrap().and_hms_opt(21, 0, 0).unwrap()
         );
         let p9 = UtcP9_30::default();
-        let n = p9.ymd(2000, 1, 1).and_hms(12, 00, 00);
+        let n = p9.with_ymd_and_hms(2000, 1, 1,12, 00, 00).unwrap();
         assert_eq!(
             n.naive_utc(),
-            NaiveDate::from_ymd(2000, 1, 1).and_hms(2, 30, 0)
+            NaiveDate::from_ymd_opt(2000, 1, 1).unwrap().and_hms_opt(2, 30, 0).unwrap()
         );
         let m9 = UtcM9_30::default();
-        let n = m9.ymd(2000, 1, 1).and_hms(12, 00, 00);
+        let n = m9.with_ymd_and_hms(2000, 1, 1,12, 00, 00).unwrap();
         assert_eq!(
             n.naive_utc(),
-            NaiveDate::from_ymd(2000, 1, 1).and_hms(21, 30, 0)
+            NaiveDate::from_ymd_opt(2000, 1, 1).unwrap().and_hms_opt(21, 30, 0).unwrap()
         );
     }
 }
