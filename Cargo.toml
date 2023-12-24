@@ -1,11 +1,12 @@
 [package]
 name = "chrono-simpletz"
-version = "0.1.4"
+version = "0.2.0"
 authors = ["aobatact <aobatact144@gmail.com>"]
 edition = "2018"
 description = "Simple Zero Sized Typed timezones for chrono"
 license = "MIT"
 keywords = ["time", "timezone"]
+rust-version = "1.56"
 repository = "https://github.com/aobatact/chrono_simpletz"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
