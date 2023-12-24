@@ -1,4 +1,25 @@
-//! Serialization/Deserialization same as [`chrono::serde`]
+/*!
+Serialization/Deserialization same as [`chrono::serde`]
+```
+# #![cfg(feature = "serde_rfc3339")]
+use chrono_simpletz::known_timezones::UtcP9;
+use ::serde::*;
+use chrono::*;
+
+#[derive(PartialEq, Eq, Clone, Debug, Serialize, Deserialize)]
+pub struct X {
+    #[serde(with = "chrono_simpletz::serde::rfc3339::p9")]
+    pub p9: DateTime<UtcP9>,
+}
+
+let dt = UtcP9::new().with_ymd_and_hms(2000, 1, 1, 12, 0, 0).unwrap();
+let x = X { p9: dt };
+let st = serde_json::to_string(&x);
+assert!(st.is_ok());
+let x2 = serde_json::from_str(&st.unwrap());
+assert_eq!(x, x2.unwrap());
+```
+*/
 
 macro_rules! known_timezone_serde_rfc3339 {
     ($mod_name:ident,$known_ty:ty,$known_ty_ident:ident) => {
@@ -109,14 +130,17 @@ macro_rules! known_timezone_serde {
         [$(($mod_name:ident,$known_ty:ty,$known_ty_ident:ident)),*$(,)?]
     ) => {
         #[cfg(feature="serde_rfc3339")]
+        #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_rfc3339")))]
         pub mod rfc3339 {
             $(known_timezone_serde_rfc3339!($mod_name,$known_ty,$known_ty_ident);)*
         }
         #[cfg(feature="serde_rfc3339_option")]
+        #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_rfc3339_option")))]
         pub mod rfc3339_option {
             $(known_timezone_serde_rfc3339_option!($mod_name,$known_ty,$known_ty_ident);)*
         }
         #[cfg(feature="serde_ts_seconds")]
+        #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_seconds")))]
         pub mod ts_seconds {
             $(
                 known_timezone_serde_with!($mod_name,$known_ty,$known_ty_ident,
@@ -125,6 +149,7 @@ macro_rules! known_timezone_serde {
             )*
         }
         #[cfg(feature="serde_ts_seconds_option")]
+        #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_seconds_option")))]
         pub mod ts_seconds_option {
             $(
                 known_timezone_serde_with_opt!($mod_name,$known_ty,$known_ty_ident,
@@ -133,6 +158,7 @@ macro_rules! known_timezone_serde {
             )*
         }
         #[cfg(feature="serde_ts_nanoseconds")]
+        #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_nanoseconds")))]
         pub mod ts_nanoseconds {
             $(
                 known_timezone_serde_with!($mod_name,$known_ty,$known_ty_ident,
@@ -141,6 +167,7 @@ macro_rules! known_timezone_serde {
             )*
         }
         #[cfg(feature="serde_ts_nanoseconds_option")]
+        #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_nanoseconds_option")))]
         pub mod ts_nanoseconds_option {
             $(
                 known_timezone_serde_with_opt!($mod_name,$known_ty,$known_ty_ident,
@@ -149,6 +176,7 @@ macro_rules! known_timezone_serde {
             )*
         }
         #[cfg(feature="serde_ts_milliseconds")]
+        #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_milliseconds")))]
         pub mod ts_milliseconds {
             $(
                 known_timezone_serde_with!($mod_name,$known_ty,$known_ty_ident,
@@ -157,6 +185,7 @@ macro_rules! known_timezone_serde {
             )*
         }
         #[cfg(feature="serde_ts_milliseconds_option")]
+        #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_milliseconds_option")))]
         pub mod ts_milliseconds_option {
             $(
                 known_timezone_serde_with_opt!($mod_name,$known_ty,$known_ty_ident,

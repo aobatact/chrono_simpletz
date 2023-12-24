@@ -43,6 +43,7 @@
 //! You need this when you want to de/serialize like `DateTime<Utc>`, because `DateTime<UtcZtc<H,M>>` cannot impl De/Serialize.
 //!
 #![cfg_attr(not(feature="std"), no_std)]
+#![cfg_attr(doc_cfg, feature(doc_cfg))]
 
 use chrono::*;
 
@@ -50,6 +51,7 @@ const HOUR_TO_SEC: i32 = 3600;
 const MIN_TO_SEC: i32 = 60;
 pub mod known_timezones;
 #[cfg(feature = "serde")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "serde")))]
 pub mod serde;
 
 /// Represent Fixed Timezone with zero sized type and const generics.
