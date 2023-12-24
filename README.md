@@ -7,7 +7,7 @@ Simple Zero Sized Typed Utc timezones for [chrono](https://docs.rs/chrono/).
 This needs const generic (for rust >= 1.51 in stable).
 ```
 use chrono::*;
-use chrono_simpletz::UtcZst;
+use chrono_simpletz::TimeZoneZst;
 use chrono_simpletz::known_timezones::*;
 use std::mem::size_of_val;
 //construct by new() or Default::default()
@@ -34,7 +34,7 @@ assert!(size_of_val(&time) < size_of_val(&fixed) )
 with std
 
 ## clock (default)
-Adds today and now function for UtcZst. 
+Adds today and now function for TimeZoneZst. 
 
 ## serde
 ### serde_ts_(seconds|milliseconds|nanoseconds)(|_option)

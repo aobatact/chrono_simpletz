@@ -2,7 +2,7 @@
 //! This needs const generic (for rust >= 1.51 in stable).
 //! ```
 //! use chrono::*;
-//! use chrono_simpletz::UtcZst;
+//! use chrono_simpletz::TimeZoneZst;
 //! use chrono_simpletz::known_timezones::*;
 //! use std::mem::size_of_val;
 //!
@@ -32,7 +32,7 @@
 //! with std
 //!
 //! ## clock (default)
-//! Adds today and now function for UtcZst.
+//! Adds today and now function for TimeZoneZst.
 //!
 //! ## serde
 //! ### serde_ts_(seconds|milliseconds|nanoseconds)(|_option)
@@ -56,20 +56,24 @@ pub mod serde;
 
 /// Represent Fixed Timezone with zero sized type and const generics.
 #[derive(Clone, Copy, Eq, PartialEq, Hash, Default, Ord, PartialOrd)]
-pub struct UtcZst<const HOUR: i32, const MINUTE: u32>;
-impl<const HOUR: i32, const MINUTE: u32> UtcZst<HOUR, MINUTE> {
+pub struct TimeZoneZst<const HOUR: i32, const MINUTE: u32>;
+
+#[deprecated(since="0.2.0", note = "Use `TimeZoneZst` instead.")]
+pub type UtcZst<const HOUR: i32, const MINUTE: u32> = TimeZoneZst<HOUR, MINUTE>;
+
+impl<const HOUR: i32, const MINUTE: u32> TimeZoneZst<HOUR, MINUTE> {
     /// Gets the offset seconds. This is used to get [`FixedOffset`].
     pub const OFFSET_SECS: i32 =
         HOUR * HOUR_TO_SEC + if HOUR < 0 { -1 } else { 1 } * (MINUTE as i32) * MIN_TO_SEC;
     /// Checks whether the `HOUR` and `MINUTE` is in valid range`(-23 <= HOUR <= 23 & MINUTE < 60)`. This does not check whether the timezone is known.
     pub const IS_IN_VALID_RANGE: bool = (HOUR >= -23) & (HOUR <= 23) & (MINUTE < 60);
-    pub const FIXED_OFFSET: FixedOffset = match FixedOffset::east_opt(Self::OFFSET_SECS) {
-        Some(fix) => fix,
-        None => unreachable!(),
+    pub const FIXED_OFFSET: FixedOffset = match (FixedOffset::east_opt(Self::OFFSET_SECS), Self::IS_IN_VALID_RANGE) {
+        (Some(fix), true) => fix,
+        _ => panic!("Invalid TimeZone"),
     };
-    /// Creates new `UtcZst`
+    /// Creates new `TimeZoneZst`
     pub const fn new() -> Self {
-        UtcZst
+        TimeZoneZst
     }
     #[cfg(clock)]
     /// Returns a Date which corresponds to the current date. Only available with clock feature.
@@ -82,12 +86,12 @@ impl<const HOUR: i32, const MINUTE: u32> UtcZst<HOUR, MINUTE> {
         Utc::now().with_timezone(Self::new())
     }
 }
-impl<const HOUR: i32, const MINUTE: u32> Offset for UtcZst<HOUR, MINUTE> {
+impl<const HOUR: i32, const MINUTE: u32> Offset for TimeZoneZst<HOUR, MINUTE> {
     fn fix(&self) -> FixedOffset {
         Self::FIXED_OFFSET
     }
 }
-impl<const HOUR: i32, const MINUTE: u32> TimeZone for UtcZst<HOUR, MINUTE> {
+impl<const HOUR: i32, const MINUTE: u32> TimeZone for TimeZoneZst<HOUR, MINUTE> {
     type Offset = Self;
     fn from_offset(offset: &Self::Offset) -> Self {
         *offset
@@ -106,12 +110,12 @@ impl<const HOUR: i32, const MINUTE: u32> TimeZone for UtcZst<HOUR, MINUTE> {
     }
 }
 // I don't want to do like this (because it loses some information for debuging), but chrono/serde is using Debug of Offset for Serializing DateTime so ...
-impl<const HOUR: i32, const MINUTE: u32> core::fmt::Debug for UtcZst<HOUR, MINUTE> {
+impl<const HOUR: i32, const MINUTE: u32> core::fmt::Debug for TimeZoneZst<HOUR, MINUTE> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{:+03}:{:02}", HOUR, MINUTE)
     }
 }
-impl<const HOUR: i32, const MINUTE: u32> core::fmt::Display for UtcZst<HOUR, MINUTE> {
+impl<const HOUR: i32, const MINUTE: u32> core::fmt::Display for TimeZoneZst<HOUR, MINUTE> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{:+03}:{:02}", HOUR, MINUTE)
     }
