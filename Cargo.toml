@@ -26,7 +26,7 @@ serde_rfc3339 = ["serde"]
 serde_rfc3339_option = ["serde"]
 
 [dependencies]
-chrono = { version = "0.4", default-features = false }
+chrono = { version = "0.4.31", default-features = false }
 serde = {default-features = false, optional = true, version = "1.0",features = ["derive"]}
 
 [dev-dependencies]

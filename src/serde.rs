@@ -237,8 +237,6 @@ known_timezone_serde!([
     (m12, UtcM12, UtcM12)
 ]);
 
-// known_timezone_serde_with!(p9, UtcP9, UtcP9, ts_milliseconds, cfg(features="ts_milliseconds"), chrono::serde::ts_milliseconds::serialize, chrono::serde::ts_milliseconds::deserialize);
-
 #[cfg(test)]
 #[cfg(feature = "serde_ts_seconds")]
 mod test_ts_seconds {
