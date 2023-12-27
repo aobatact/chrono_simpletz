@@ -136,6 +136,7 @@ macro_rules! known_timezone_serde {
     ) => {
         #[cfg(feature="serde_rfc3339")]
         #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_rfc3339")))]
+        /// Ser/de to/from rfc3339
         pub mod rfc3339 {
             use ::serde::*;
             use chrono::*;
@@ -158,6 +159,7 @@ macro_rules! known_timezone_serde {
         }
         #[cfg(feature="serde_rfc3339_option")]
         #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_rfc3339_option")))]
+        /// Ser/de to/from optional rfc3339
         pub mod rfc3339_option {
             use ::serde::*;
             use super::*;
@@ -186,6 +188,7 @@ macro_rules! known_timezone_serde {
         }
         #[cfg(feature="serde_ts_seconds")]
         #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_seconds")))]
+        /// Ser/de to/from timestamps in seconds
         pub mod ts_seconds {
             use super::*;
             /// Funciton for serialize. Use this for serialize_with.
@@ -216,6 +219,7 @@ macro_rules! known_timezone_serde {
         }
         #[cfg(feature="serde_ts_seconds_option")]
         #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_seconds_option")))]
+        /// Ser/de to/from optional timestamps in seconds
         pub mod ts_seconds_option {
             use super::*;
             /// Funciton for serialize. Use this for serialize_with.
@@ -246,6 +250,7 @@ macro_rules! known_timezone_serde {
         }
         #[cfg(feature="serde_ts_nanoseconds")]
         #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_nanoseconds")))]
+        /// Ser/de to/from timestamps in nanoseconds
         pub mod ts_nanoseconds {
             use super::*;
             /// Funciton for serialize. Use this for serialize_with.
@@ -275,6 +280,7 @@ macro_rules! known_timezone_serde {
         }
         #[cfg(feature="serde_ts_nanoseconds_option")]
         #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_nanoseconds_option")))]
+        /// Ser/de to/from optional timestamps in nanoseconds
         pub mod ts_nanoseconds_option {
             use super::*;
             /// Funciton for serialize. Use this for serialize_with.
@@ -304,6 +310,7 @@ macro_rules! known_timezone_serde {
         }
         #[cfg(feature="serde_ts_milliseconds")]
         #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_milliseconds")))]
+        /// Ser/de to/from timestamps in milliseconds
         pub mod ts_milliseconds {
             use super::*;
             /// Funciton for serialize. Use this for serialize_with.
@@ -333,6 +340,7 @@ macro_rules! known_timezone_serde {
         }
         #[cfg(feature="serde_ts_milliseconds_option")]
         #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_milliseconds_option")))]
+        /// Ser/de to/from optional timestamps in millisecond
         pub mod ts_milliseconds_option {
             use super::*;
             /// Funciton for serialize. Use this for serialize_with.
@@ -359,6 +367,56 @@ macro_rules! known_timezone_serde {
                     chrono::serde::ts_milliseconds_option::serialize,
                     chrono::serde::ts_milliseconds_option::deserialize);
             )*
+        }
+        #[cfg(feature="serde_ts_microseconds")]
+        #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_microseconds")))]
+        /// Ser/de to/from timestamps in microseconds
+        pub mod ts_microseconds {
+            use super::*;
+            /// Funciton for serialize. Use this for serialize_with.
+            pub fn serialize<S, const HOUR: i32, const MINUTE: u32>(
+                dt: &DateTime<TimeZoneZst<HOUR, MINUTE>>,
+                serializer: S,
+            ) -> Result<S::Ok, S::Error>
+            where
+                S: ::serde::Serializer,
+            {
+                chrono::serde::ts_microseconds::serialize(&dt.with_timezone(&chrono::Utc), serializer)
+            }
+            /// Funciton for deserialize. Use this for deserialize_with.
+            pub fn deserialize<'de, D, const HOUR: i32, const MINUTE: u32>(
+                d: D,
+            ) -> Result<DateTime<TimeZoneZst<HOUR, MINUTE>>, D::Error>
+            where
+                D: ::serde::Deserializer<'de>,
+            {
+                chrono::serde::ts_microseconds::deserialize(d).map(|x| x.with_timezone(&TimeZoneZst::<HOUR, MINUTE>::new()))
+            }
+        }
+        #[cfg(feature="serde_ts_microseconds_option")]
+        #[cfg_attr(doc_cfg, doc(cfg(feature = "serde_ts_microseconds_option")))]
+        /// Ser/de to/from optional timestamps in microseconds
+        pub mod ts_microseconds_option {
+            use super::*;
+            /// Funciton for serialize. Use this for serialize_with.
+            pub fn serialize<S, const HOUR: i32, const MINUTE: u32>(
+                dt: &Option<DateTime<TimeZoneZst<HOUR, MINUTE>>>,
+                serializer: S,
+            ) -> Result<S::Ok, S::Error>
+            where
+                S: ::serde::Serializer,
+            {
+                chrono::serde::ts_microseconds_option::serialize(&dt.map(|x| x.with_timezone(&chrono::Utc)), serializer)
+            }
+            /// Funciton for deserialize. Use this for deserialize_with.
+            pub fn deserialize<'de, D, const HOUR: i32, const MINUTE: u32>(
+                d: D,
+            ) -> Result<Option<DateTime<TimeZoneZst<HOUR, MINUTE>>>, D::Error>
+            where
+                D: ::serde::Deserializer<'de>,
+            {
+                chrono::serde::ts_microseconds_option::deserialize(d).map(|x| x.map(|y| y.with_timezone(&<TimeZoneZst<HOUR, MINUTE>>::new())))
+            }
         }
     };
 }

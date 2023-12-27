@@ -17,6 +17,8 @@ std = []
 clock = ["chrono/clock"]
 serde = ["dep:serde", "chrono/serde"]
 serde_ts_all = [
+    "serde_ts_microseconds",
+    "serde_ts_microseconds_option",
     "serde_ts_milliseconds",
     "serde_ts_milliseconds_option",
     "serde_ts_nanoseconds",
@@ -32,6 +34,8 @@ serde_ts_milliseconds = ["serde"]
 serde_ts_milliseconds_option = ["serde"]
 serde_ts_nanoseconds = ["serde"]
 serde_ts_nanoseconds_option = ["serde"]
+serde_ts_microseconds = ["serde"]
+serde_ts_microseconds_option = ["serde"]
 serde_rfc3339 = ["serde"]
 serde_rfc3339_option = ["serde"]
 
