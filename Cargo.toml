@@ -1,6 +1,6 @@
 [package]
 name = "chrono-simpletz"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["aobatact <aobatact144@gmail.com>"]
 edition = "2018"
 description = "Simple Zero Sized Typed timezones for chrono"
@@ -15,20 +15,35 @@ repository = "https://github.com/aobatact/chrono_simpletz"
 default = ["std", "clock"]
 std = []
 clock = ["chrono/clock"]
-serde = ["dep:serde","chrono/serde"]
-serde_ts_all = ["serde_ts_milliseconds","serde_ts_milliseconds_option","serde_ts_nanoseconds","serde_ts_nanoseconds_option","serde_ts_seconds","serde_ts_seconds_option", "serde_rfc3339", "serde_rfc3339_option"]
+serde = ["dep:serde", "chrono/serde"]
+serde_ts_all = [
+    "serde_ts_microseconds",
+    "serde_ts_microseconds_option",
+    "serde_ts_milliseconds",
+    "serde_ts_milliseconds_option",
+    "serde_ts_nanoseconds",
+    "serde_ts_nanoseconds_option",
+    "serde_ts_seconds",
+    "serde_ts_seconds_option",
+    "serde_rfc3339",
+    "serde_rfc3339_option",
+]
 serde_ts_seconds = ["serde"]
 serde_ts_seconds_option = ["serde"]
 serde_ts_milliseconds = ["serde"]
 serde_ts_milliseconds_option = ["serde"]
 serde_ts_nanoseconds = ["serde"]
 serde_ts_nanoseconds_option = ["serde"]
+serde_ts_microseconds = ["serde"]
+serde_ts_microseconds_option = ["serde"]
 serde_rfc3339 = ["serde"]
 serde_rfc3339_option = ["serde"]
 
 [dependencies]
 chrono = { version = "0.4.31", default-features = false }
-serde = {default-features = false, optional = true, version = "1.0",features = ["derive"]}
+serde = { default-features = false, optional = true, version = "1.0", features = [
+    "derive",
+] }
 
 [dev-dependencies]
 serde_json = "1.0"

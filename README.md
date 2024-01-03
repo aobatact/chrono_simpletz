@@ -1,11 +1,12 @@
 # chrono-simpletz
+
 [![Doc](https://docs.rs/chrono-simpletz/badge.svg)](https://docs.rs/chrono-simpletz)
 [![Crate](https://img.shields.io/crates/v/chrono-simpletz.svg)](https://crates.io/crates/chrono-simpletz)
 
-
 Simple Zero Sized Typed Utc timezones for [chrono](https://docs.rs/chrono/).
 This needs const generic (for rust >= 1.51 in stable).
-```
+
+```Rust
 use chrono::*;
 use chrono_simpletz::TimeZoneZst;
 use chrono_simpletz::known_timezones::*;
@@ -30,16 +31,22 @@ assert!(size_of_val(&time) < size_of_val(&fixed) )
 ```
 
 # features
+
 ## std (default)
+
 with std
 
 ## clock (default)
-Adds today and now function for TimeZoneZst. 
+
+Adds today and now function for TimeZoneZst.
 
 ## serde
-### serde_ts_(seconds|milliseconds|nanoseconds)(|_option)
+
+### `serde_ts_(seconds|milliseconds|microseconds|nanoseconds)(|\_option)`
+
 Adds modules for de/serialize functions to use with de/serialize_with function.
 
-### serde_ts_rfc3339(|_option)
+### `serde_ts_rfc3339(|\_option)`
+
 Adds modules for de/serialize functions to use with de/serialize_with function.
 You need this when you want to de/serialize like `DateTime<Utc>`, because `DateTime<UtcZtc<H,M>>` cannot impl De/Serialize.
