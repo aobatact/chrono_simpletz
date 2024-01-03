@@ -87,15 +87,17 @@ impl<const HOUR: i32, const MINUTE: u32> TimeZoneZst<HOUR, MINUTE> {
         let _ = Self::FIXED_OFFSET;
         TimeZoneZst
     }
-    #[cfg(clock)]
+    #[cfg(feature = "clock")]
+    #[deprecated(since = "0.3.0")]
+    #[allow(deprecated)]
     /// Returns a Date which corresponds to the current date. Only available with clock feature.
     pub fn today() -> Date<Self> {
-        Utc::today().with_timezone(Self::new())
+        Utc::today().with_timezone(&Self::new())
     }
-    #[cfg(clock)]
+    #[cfg(feature = "clock")]
     /// Returns a DateTime which corresponds to the current date. Only available with clock feature.
     pub fn now() -> DateTime<Self> {
-        Utc::now().with_timezone(Self::new())
+        Utc::now().with_timezone(&Self::new())
     }
 }
 
